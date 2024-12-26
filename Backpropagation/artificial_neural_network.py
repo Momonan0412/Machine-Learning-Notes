@@ -10,11 +10,11 @@ if __name__ == "__main__":
     targets = np.array([[i[0] + i[1]] for i in inputs])  # Scale targets to 0-1 range
 
     # Initialize MLP with proper weight initialization
-    mlp = MLP(2, [5], 1)
+    mlp = MLP(2, [5], 50)
 
     # Train the model
     trainer = Trainer(mlp)
-    trainer.train(inputs, targets, epochs=50)
+    trainer.train(inputs, targets, epochs=1)
 
     # Test the model
     test_input = np.array([0.3, 0.1])

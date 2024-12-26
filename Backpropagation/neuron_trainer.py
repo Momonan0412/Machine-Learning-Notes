@@ -17,7 +17,9 @@ class Trainer:
                 # Step 2: Backward pass (calculates gradients)
                 backpropagate = Backpropagate(self._mlp._get_activations(), 
                                               self._mlp._get_derivatives(), 
-                                              self._mlp._get_weights())
+                                              self._mlp._get_weights(),
+                                              self._mlp._get_biases(),
+                                              self._mlp._get_biases_derivatives())
                 
                 backpropagate.backward_propagate(target-predicted)
 
@@ -28,4 +30,4 @@ class Trainer:
                 total_error += ActivationFunctions.mean_squared_error(target, predicted)
 
             # Log progress
-            print(f"Epoch {epoch + 1}, Error: {total_error / len(inputs)}")
+            # print(f"Epoch {epoch + 1}, Error: {total_error / len(inputs)}")

@@ -85,3 +85,29 @@ class NetworkInitializer:
             # print("Activation #", i)
             # print(activation)
         return activations
+    
+    @staticmethod
+    def initialize_bias(layers):
+        """
+        Initialize random bias for each layer's neurons.
+        Initialize biases for all layers starting from the first hidden layer to the output layer.
+        
+        Parameters:
+        - layers: A list containing the number of neurons in each layer, including input, hidden, and output layers.
+        
+        Returns:
+        - biases: A list of numpy arrays where each array corresponds to the biases of the neurons in a specific layer.
+        """
+        biases = []
+        # print("Biases")
+        for i in range(1, len(layers)):
+            bias = np.random.rand(layers[i])
+            biases.append(bias)
+            # print(bias)
+        
+        # print("Layers")
+        # for i in range(1, len(layers)):
+        #     layer = np.zeros(layers[i])
+        #     print(layer)
+        return biases
+        
