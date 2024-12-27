@@ -6,7 +6,7 @@ from neuron_trainer import Trainer
 
 if __name__ == "__main__":
     # Scale inputs and targets
-    inputs = np.array([[random() / 2 for _ in range(2)] for _ in range(1000)])
+    inputs = np.array([[random() / 2 for _ in range(2)] for _ in range(10)])
     targets = np.array([[i[0] + i[1]] for i in inputs])  # Scale targets to 0-1 range
 
     # Initialize MLP with proper weight initialization
@@ -14,7 +14,7 @@ if __name__ == "__main__":
 
     # Train the model
     trainer = Trainer(mlp)
-    trainer.train(inputs, targets, epochs=1)
+    trainer.train(inputs, targets, epochs=1000)
 
     # Test the model
     test_input = np.array([0.3, 0.1])
@@ -22,4 +22,4 @@ if __name__ == "__main__":
     output = mlp.forward_propagate(test_input)
 
     print()
-    print(f"Expected: {test_target[0]}, Predicted: {output[0]}")
+    print(f"Expected: {test_target}, Predicted: {output}")

@@ -52,35 +52,21 @@ class Backpropagate:
             error = np.dot(delta, self._weights[i].T)
 
             # Print the derivatives (gradients) for the current layer, useful for debugging
-            # print(f"Derivatives #{i}", self._derivatives[i])
+            # print(f"Error #{i}", error)
         # Return the error after backpropagation to be used in the next iteration or training step
         return error
 
     def gradient_descent(self):
         self._update_weights()
-        # self._update_biases()
+        self._update_biases()
 
     def _update_weights(self):
         for i in range(len(self._weights)):
             weight = self._weights[i]
-            # print("Before: ", weight)
-            derivative = self._derivatives[i]
-            weight += derivative * self._learning_rate
-            # print("After: ", weight)
+            self._weights[i] = weight - (self._learning_rate * ((-1)*self._derivatives[i]))
             
     def _update_biases(self):
-        # Update biases
-        # print("Biases: ")
-        # print(self._biases[1])
-        # print("Biases Derivatives: ")
-        # print(self._bias_derivatives[-2])
-        
-        
         for i in range(len(self._biases)):
             bias = self._biases[i]
             bias_derivative = self._biases_derivatives[i]  # Gradient for the biases
-            # print(f"Bias {i}: ", bias)
-            # print(f"Bias Derivative Reshaped {i}: ", bias_derivative)
-            # Update the biases: b_j = b_j - learning_rate * bias_derivative
-            self._biases[i] -= self._learning_rate * bias_derivative
-            print("Updated Bias: ", self._biases[i])
+            self._biases[i] = bias - (self._learning_rate * ((-1)*bias_derivative))
