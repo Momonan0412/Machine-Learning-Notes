@@ -1,5 +1,7 @@
 import os
 import librosa
+import math
+import json
 class AudioPreprocessor:
     """
     dataset_path: str
@@ -45,40 +47,67 @@ class AudioPreprocessor:
         self._set_duration()
         self._set_sample_per_track()
         self._set_num_samples_per_segment()
+        self._set_expected_num_mfcc_vectors_per_segment()
         
     def _save_mfcc(self):
         # Loop Through All Genres
+        
+        # print(self._duration)
+        # print(self._sample_per_track)
+        # print(self._num_samples_per_segment)
+        # print(self._expected_num_mfcc_vectors_per_segment)
+        
         for i, (dirpath, dirnames, filenames) in enumerate(os.walk(self._dataset_path)):
+            # print("LABEL!", i)
             if dirpath != self._dataset_path: # os.walk gives "self._dataset_path" for the first iteration
-                # self._save_semantic_label(dirpath)
-                self._process_file_genre(filenames, dirpath)
-                pass
+                # print("PATH!", dirpath)
+                self._save_semantic_label(dirpath)
+                self._process_file_genre(filenames, dirpath, i-2)
+        
+        # print(self._data)
     
-    def _process_file_genre(self, filenames, dirpath):
+    def _process_file_genre(self, filenames, dirpath, label):
         for filename in filenames:
             # Access only the audio file
             if ".wav" in filename:
                 file_path = os.path.join(dirpath, filename)
                 # print(file_path) # Debugging
                 if "jazz.00054" in file_path:
-                    print("SHOULD BE! jazz.00054!", file_path)
+                    # print("SHOULD BE! jazz.00054!", file_path)
                     continue
                 signal, sample_rate = librosa.load(file_path, sr=self._sample_rate)
-                """Debugging"""
+                # """Debugging"""
                 # print(signal)
                 # print(sample_rate)
+                # print(label)
                 # print("---")
-                self._process_segment(signal=signal)
+                self._process_segment(signal=signal, label=label)
     
     """Given that all dataset's duration is 30, hence the default value"""
     def _set_duration(self, duration=30):
         self._duration = duration
+    
+    """
+    22050 * 30
+    Visualize this as the number of "index" in the signal matrix
+    """
     def _set_sample_per_track(self):
         self._sample_per_track = self._sample_rate * self._duration
+
+    """
+    Divide the `number of "index" in the signal matrix` to segments using the self._num_segments
+    """
     def _set_num_samples_per_segment(self):
         self._num_samples_per_segment = int(self._sample_per_track / self._num_segments)
-        
-    def _process_segment(self, signal):
+    
+    """
+    Using the self._num_samples_per_segment / self._hop_length we can get the approximate 
+    expected length of the mfcc vector
+    """
+    def _set_expected_num_mfcc_vectors_per_segment(self):
+        self._expected_num_mfcc_vectors_per_segment = math.ceil(self._num_samples_per_segment / self._hop_length)
+
+    def _process_segment(self, signal, label):
         for segment in range(self._num_segments):
             start_sample = self._num_samples_per_segment * segment
             # segment=0 => 0
@@ -87,24 +116,25 @@ class AudioPreprocessor:
             # segment=0 => start_sample + self._num_samples_per_segment
             # Therefore, start_sample and finish_sample is the "segment-step" in traversing the "signal" array
             mfcc = librosa.feature.mfcc(y=signal[start_sample:finish_sample], 
-                                        sr=self._sample_rate, 
+                                        sr=self._sample_rate, # Should match the rate used to load the signal
                                         n_fft=self._n_fft, 
                                         n_mfcc=self._n_mfcc, 
                                         hop_length=self._hop_length)
-            # if segment == 0:
-            #     print("Normal: ", mfcc.shape)
-            #     print("Abnormal: ", mfcc.T.shape)
             mfcc = mfcc.T # For Easy Manipulation
-    def _extracting_mfcc(self):
-        pass
-    
+            if len(mfcc) == self._expected_num_mfcc_vectors_per_segment:
+                self._data["mfcc"].append(mfcc.tolist())
+                self._data["label"].append(label)
+        print("Label #", label)
+        print("Finish!")
     
     def _save_semantic_label(self, dirpath):
-        dirpath_components = dirpath.split("\\")
-        if(len(dirpath_components) == 4): # Valid "dirpath_components" are with length 4
-            semantic_label = dirpath_components[-1]
-            self._data["mapping"].append(semantic_label)
-            print(semantic_label) # Debugging
+        if "genres" in dirpath:
+            # print(dirpath)
+            dirpath_components = dirpath.split("\\")
+            if len(dirpath_components) == 4: # Valid "dirpath_components" are with length 4
+                semantic_label = dirpath_components[-1]
+                self._data["mapping"].append(semantic_label)
+                print("Processing", semantic_label) # Debugging
     
     """Dictionary to store data"""
     def _dict_data_storage(self):
@@ -114,8 +144,21 @@ class AudioPreprocessor:
             "label" : [] # Outputs or Targets
         }
         
+    def _save_us_json_file(self):
+        with open(self._json_path, "w") as data_as_json_file:
+            json.dump(self._data, data_as_json_file, indent=4)
+        
 if __name__ == "__main__":
     DATASET_PATH = "Music Genre Classification\\Data"
-    JSON_PATH = "data.json"
+    JSON_PATH = "Music Genre Classification\\data.json"
     audio_preprocessor = AudioPreprocessor(DATASET_PATH, JSON_PATH)
     audio_preprocessor._save_mfcc()
+    audio_preprocessor._save_us_json_file()
+    
+    # Open and read the JSON file
+    # with open(JSON_PATH, "r") as data_file:
+    #     data = json.load(data_file)
+
+    # print(f"The JSON file has {len(data["mapping"])} items.")
+    # print(f"The JSON file has {len(data["mfcc"])} items.")
+    # print(f"The JSON file has {len(data["label"])} items.")
