@@ -35,7 +35,7 @@ class AudioPreprocessor:
         This controls the overlap between windows and influences the time resolution of the spectrogram.
     """
     def __init__(self, dataset_path, json_path, 
-                 sample_rate=22050, num_segments=5, n_mfcc=13, n_fft=2048, hop_length=512):
+                 sample_rate=22050, num_segments=10, n_mfcc=13, n_fft=2048, hop_length=512):
         self._dataset_path = dataset_path
         self._json_path = json_path
         self._sample_rate = sample_rate
