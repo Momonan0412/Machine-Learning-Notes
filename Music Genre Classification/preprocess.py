@@ -35,7 +35,7 @@ class AudioPreprocessor:
         This controls the overlap between windows and influences the time resolution of the spectrogram.
     """
     def __init__(self, dataset_path, json_path, 
-                 sample_rate=22050, num_segments=10, n_mfcc=13, n_fft=2048, hop_length=512):
+                 sample_rate=22050, num_segments=10, n_mfcc=12, n_fft=2048, hop_length=512):
         self._dataset_path = dataset_path
         self._json_path = json_path
         self._sample_rate = sample_rate
@@ -64,7 +64,7 @@ class AudioPreprocessor:
                 self._save_semantic_label(dirpath)
                 self._process_file_genre(filenames, dirpath, i-2)
         
-        # print(self._data)
+        print("Finish!")
     
     def _process_file_genre(self, filenames, dirpath, label):
         for filename in filenames:
@@ -124,8 +124,8 @@ class AudioPreprocessor:
             if len(mfcc) == self._expected_num_mfcc_vectors_per_segment:
                 self._data["mfcc"].append(mfcc.tolist())
                 self._data["label"].append(label)
-        print("Label #", label)
-        print("Finish!")
+        # print("Label #", label)
+        # print("Finish!")
     
     def _save_semantic_label(self, dirpath):
         if "genres" in dirpath:
