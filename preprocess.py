@@ -35,7 +35,7 @@ class AudioPreprocessor:
         This controls the overlap between windows and influences the time resolution of the spectrogram.
     """
     def __init__(self, dataset_path, json_path, 
-                 sample_rate=22050, num_segments=10, n_mfcc=12, n_fft=2048, hop_length=512):
+                 sample_rate=22050, num_segments=10, n_mfcc=13, n_fft=2048, hop_length=512):
         self._dataset_path = dataset_path
         self._json_path = json_path
         self._sample_rate = sample_rate
@@ -131,7 +131,7 @@ class AudioPreprocessor:
         if "genres" in dirpath:
             # print(dirpath)
             dirpath_components = dirpath.split("\\")
-            if len(dirpath_components) == 4: # Valid "dirpath_components" are with length 4
+            if len(dirpath_components) == 3: # Valid "dirpath_components" are with length 4
                 semantic_label = dirpath_components[-1]
                 self._data["mapping"].append(semantic_label)
                 print("Processing", semantic_label) # Debugging
@@ -145,12 +145,14 @@ class AudioPreprocessor:
         }
         
     def _save_us_json_file(self):
+        # print(self._data["mapping"])
+        # print(self._data["label"])
         with open(self._json_path, "w") as data_as_json_file:
             json.dump(self._data, data_as_json_file, indent=4)
         
 if __name__ == "__main__":
-    DATASET_PATH = "Music Genre Classification\\Data"
-    JSON_PATH = "Music Genre Classification\\data.json"
+    DATASET_PATH = "Data"
+    JSON_PATH = "data.json"
     audio_preprocessor = AudioPreprocessor(DATASET_PATH, JSON_PATH)
     audio_preprocessor._save_mfcc()
     audio_preprocessor._save_us_json_file()
