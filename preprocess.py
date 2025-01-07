@@ -71,7 +71,7 @@ class AudioPreprocessor:
             # Access only the audio file
             if ".wav" in filename:
                 file_path = os.path.join(dirpath, filename)
-                # print(file_path) # Debugging
+                print(file_path) # Debugging
                 if "jazz.00054" in file_path:
                     # print("SHOULD BE! jazz.00054!", file_path)
                     continue
@@ -128,8 +128,8 @@ class AudioPreprocessor:
         # print("Finish!")
     
     def _save_semantic_label(self, dirpath):
-        if "genres" in dirpath:
-            # print(dirpath)
+        if "genres" in dirpath or "Input" in dirpath:
+            print(dirpath)
             dirpath_components = dirpath.split("\\")
             if len(dirpath_components) == 3: # Valid "dirpath_components" are with length 4
                 semantic_label = dirpath_components[-1]
@@ -151,9 +151,12 @@ class AudioPreprocessor:
             json.dump(self._data, data_as_json_file, indent=4)
         
 if __name__ == "__main__":
-    DATASET_PATH = "Data"
-    JSON_PATH = "data.json"
+    # DATASET_PATH = "Data"
+    DATASET_PATH = "Input_Data"
+    # JSON_PATH = "data.json"
+    JSON_PATH = "input_data.json"
     audio_preprocessor = AudioPreprocessor(DATASET_PATH, JSON_PATH)
+    audio_preprocessor._set_duration(244)
     audio_preprocessor._save_mfcc()
     audio_preprocessor._save_us_json_file()
     
