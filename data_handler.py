@@ -25,7 +25,7 @@ class DataUtils:
     def _get_maps(self):
         return self._map
     
-    def prepare_data(self, test_size, validation_size):
+    def prepare_data(self, test_size, validation_size, model_type):
         # Load Data
         x, y = self._get_inputs_and_targets()
         # Split
@@ -37,9 +37,11 @@ class DataUtils:
         # Current "x_train", "x_validation" and "x_test"'s Shape (5991, 130, 12) ("Total Sample", "Samples/Hoplength", "MFCC")
         # It Does Not Contain "Depth/Channel"
         # Apply https://stackoverflow.com/questions/29241056/how-do-i-use-np-newaxis
-        x_train = x_train[..., np.newaxis]
-        x_validation = x_validation[..., np.newaxis]
-        x_test = x_test[..., np.newaxis]
+        if(model_type == "CNN"):
+            x_train = x_train[..., np.newaxis]
+            x_validation = x_validation[..., np.newaxis]
+            x_test = x_test[..., np.newaxis]
+        
         print("X Train's Shape ", x_train.shape)
         print("X Validation's Shape ", x_validation.shape)
         print("X Test's Shape ", x_test.shape)

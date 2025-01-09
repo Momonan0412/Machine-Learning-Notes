@@ -1,6 +1,6 @@
 import tensorflow as tf
 from keras.api.models import Sequential
-from keras.api.layers import Dense, Conv2D, Flatten, MaxPooling2D, Dropout, BatchNormalization
+from keras.api.layers import Dense, Conv2D, Flatten, MaxPooling2D, Dropout, BatchNormalization, LSTM, Input
 from keras.api.optimizers import Adam
 from keras import regularizers
 # https://stackoverflow.com/questions/63006575/what-is-the-difference-between-maxpool-and-maxpooling-layers-in-kera
@@ -18,11 +18,14 @@ class ModelBuilder:
         self._kwargs = kwargs
     
     def _build_model(self, **kwargs):
+        print("Debug")
         if self._model_type == "sequential":
             return self._build_sequential_model(kwargs.get('learning_rate'))
 
     def _build_sequential_model(self, learning_rate):
         model = Sequential()
+        model.add(Input(shape=self._input_shape)) # Define the input shape for the first layer
+        # Best Practice
         # https://stackoverflow.com/questions/37674306/what-is-the-difference-between-same-and-valid-padding-in-tf-nn-max-pool-of-t
         for layer_config in self._kwargs.get('layers', []):
             if layer_config['type'] == 'conv':
@@ -40,6 +43,13 @@ class ModelBuilder:
                                 activation=layer_config['activation']))
             if layer_config['type'] == 'dropout':
                 model.add(Dropout(rate=layer_config['rate']))
+            if layer_config['type'] == 'lstm':
+                model.add(LSTM(units=layer_config['units'], return_sequences=layer_config['return_sequences']))
+                
+                # model.add(LSTM(
+                #     units=layer_config['units'],
+                #     return_sequences=layer_config['return_sequences'],
+                #     activation='tanh', recurrent_activation='sigmoid'))  # Equivalent to the default
                 
         model.add(Dense(self._num_classification, activation='softmax'))
         # Compile the model with default settings
