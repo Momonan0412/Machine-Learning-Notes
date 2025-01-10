@@ -3,6 +3,7 @@ from keras.api.models import Sequential
 from keras.api.layers import Dense, Conv2D, Flatten, MaxPooling2D, Dropout, BatchNormalization, LSTM, Input
 from keras.api.optimizers import Adam
 from keras import regularizers
+from datetime import datetime
 # https://stackoverflow.com/questions/63006575/what-is-the-difference-between-maxpool-and-maxpooling-layers-in-kera
 class ModelBuilder:
     """
@@ -12,13 +13,13 @@ class ModelBuilder:
     **kwargs: Any additional arguments for flexibility (like layer configurations, optimizer settings, etc.).
     """
     def __init__(self, input_shape, num_classification, model_type="sequential", **kwargs):
+        print("Start time:", datetime.now().strftime("%d/%m/%Y %H:%M"))
         self._input_shape = input_shape
         self._num_classification = num_classification
         self._model_type = model_type
         self._kwargs = kwargs
     
     def _build_model(self, **kwargs):
-        print("Debug")
         if self._model_type == "sequential":
             return self._build_sequential_model(kwargs.get('learning_rate'))
 

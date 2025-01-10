@@ -1,6 +1,10 @@
+# My Notes
+Guitar Chord Classification/Dataset
+Guitar Chord Classification/*h5
 Data/
 data.json
 input_data.json
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

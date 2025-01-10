@@ -2,6 +2,7 @@ import os
 import librosa
 import math
 import json
+import numpy as np
 class AudioPreprocessor:
     """
     dataset_path: str
@@ -147,8 +148,10 @@ class AudioPreprocessor:
     def _save_us_json_file(self):
         # print(self._data["mapping"])
         # print(self._data["label"])
-        with open(self._json_path, "w") as data_as_json_file:
-            json.dump(self._data, data_as_json_file, indent=4)
+        print(np.array(self._data["mfcc"]).shape)
+        
+        # with open(self._json_path, "w") as data_as_json_file:
+        #     json.dump(self._data, data_as_json_file, indent=4)
         
 if __name__ == "__main__":
     # DATASET_PATH = "Data"
